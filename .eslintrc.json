@@ -27,11 +27,16 @@
             }
         }
     },
-    "plugins": ["react", "import", "react-hooks"],
+    "plugins": ["react", "react-hooks", "import", "prettier"],
     "parser": "babel-eslint",
     "rules": {
         "react-hooks/rules-of-hooks": 2,
         "react-hooks/exhaustive-deps": 0,
-        "no-unused-vars": 1
+        "prettier/prettier": 2,
+        "import/named": 0,
+        "import/prefer-default-export": 0,
+        "no-unused-vars": 1,
+        "lines-between-class-members": 0,
+        "consistent-return": 0
     }
 }
