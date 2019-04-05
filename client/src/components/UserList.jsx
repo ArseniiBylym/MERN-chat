@@ -4,19 +4,21 @@ import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import {observer} from 'mobx-react-lite';
 import {IoIosRadioButtonOff, IoIosRadioButtonOn} from 'react-icons/io';
-import {UsersStore} from '../store';
+import {ChatStore} from '../store';
 
 export const UserList = observer(props => {
-    const usersStore = useContext(UsersStore);
+    const chatStore = useContext(ChatStore);
+    useEffect(() => {
+        chatStore.getConectedUsers();
+    }, []);
 
-    if (!usersStore.users) return null;
+    if (!chatStore.users) return null;
     return (
         <div className="UserList">
             <Paper className="w-100 p-2 d-flex nowrap flex-column">
-                {usersStore.users.map(item => {
-                    console.log(item);
+                {chatStore.userList.map(item => {
                     return (
-                        <div key={item.id} className="my-1">
+                        <div key={item._id} className="my-1">
                             <Chip
                                 avatar={
                                     <Avatar alt="User" src={item.avatar || ''}>
@@ -28,7 +30,7 @@ export const UserList = observer(props => {
                                 className="justify-content-start w-100"
                                 onDelete={() => {}}
                                 deleteIcon={
-                                    item.contected ? (
+                                    item.conected ? (
                                         <span className="text-success h6 ml-auto">
                                             <IoIosRadioButtonOn className="d-block" />
                                         </span>

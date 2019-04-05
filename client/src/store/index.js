@@ -1,7 +1,7 @@
 import {createContext} from 'react';
 
 import {User} from './User.store';
-import {Users} from './Users.store';
+import {Chat} from './Chat.store';
 
 export const UserStore = createContext(new User());
-export const UsersStore = createContext(new Users());
+export const ChatStore = createContext(new Chat());

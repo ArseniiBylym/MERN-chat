@@ -3,13 +3,13 @@ import {Redirect} from 'react-router-dom';
 import {observer} from 'mobx-react-lite';
 import {Map, Chat} from '../components';
 
-import {UserStore, UsersStore} from '../store';
+import {UserStore, ChatStore} from '../store';
 
 export const Home = observer(props => {
     const userStore = useContext(UserStore);
-    const usersStore = useContext(UsersStore);
+    const chatStore = useContext(ChatStore);
     useEffect(() => {
-        usersStore.getUsers();
+        chatStore.getUsers();
     });
 
     const logoutHandler = () => {

@@ -2,7 +2,8 @@ const User = require('../models/User.model');
 
 module.exports = clientManager = () => {
     let users = [];
-    const clients = new Map();
+    let clients = [];
+    const messages = [];
 
     const initUsersFromDB = async () => {
         const result = await User.find().select('-password -__v').exec();
@@ -13,12 +14,21 @@ module.exports = clientManager = () => {
 
     const getClients = () => clients;
 
-    const addClient = (clientId, user) => {
-        clients.set(clientId, user)
+    const addClient = (clientId, userId) => {
+        const conectedClient = clients.find(item => item.userId === userId);
+        if (conectedClient) {
+            conectedClient.clientId = clientId;
+        } else {
+            clients.push({clientId, userId})
+        }
     }
 
     const removeClient = (clientId) => {
-        clients.delete(clientId);
+        clients = clients.filter(item => item.clientId !== clientId);
+    }
+
+    const addMessage = data => {
+        messages.push(data)
     }
 
     return {
@@ -27,5 +37,6 @@ module.exports = clientManager = () => {
         getClients,
         addClient,
         removeClient,
+        addMessage
     }
 }

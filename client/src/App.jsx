@@ -1,12 +1,15 @@
 import React, {useEffect, useContext} from 'react';
 import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
 import {Home, Login, Register} from './routes';
-import {UserStore} from './store';
+import {UserStore, ChatStore} from './store';
+import {socket} from './api/socket';
 
 const App = props => {
     const userStore = useContext(UserStore);
+    const chatStore = useContext(ChatStore);
     useEffect(() => {
-        userStore.getUser();
+        userStore.getUser(); // get all users list
+        socket.initHandlers(userStore, chatStore); // init handlers for all incoming sockets
     }, []);
 
     return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import {UserProfile, ChatBoard, UserList} from '.';
+import {UserProfile, ChatBoard, UserList, ChatInput} from '.';
 import './style.scss';
 
 export const Chat = props => {
@@ -16,6 +16,7 @@ export const Chat = props => {
                     <UserList />
                 </div>
             </div>
+            <ChatInput />
         </div>
     );
 };

@@ -26,7 +26,8 @@ module.exports = clientHandler = (socket, manager) => {
                 process.env.JWT_SECRET_KEY,
                 {expiresIn: '1d'},
             );
-            return cb({user: user.toJSON(), token});
+            manager.addClient(socket.id, user.id);
+            return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             if (error.name === 'ValidationError') {
                 console.log(error.errors)
@@ -53,7 +54,8 @@ module.exports = clientHandler = (socket, manager) => {
                 process.env.JWT_SECRET_KEY,
                 {expiresIn: '1d'},
             );
-            return cb({user: user.toJSON(), token});
+            manager.addClient(socket.id, user.id);
+            return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             return cb({error: 'Login failed'});
         }
@@ -66,7 +68,8 @@ module.exports = clientHandler = (socket, manager) => {
             const {email, id} = jwt.verify(token, process.env.JWT_SECRET_KEY);
             const user = await User.findById(id)
             if (!user)  return cb({error: 'Token is not valid'})
-            return cb({user: user.toJSON(), token});
+            manager.addClient(socket.id, user.id);
+            return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             return cb({error: 'No user aveilable'})
         }
@@ -74,6 +77,7 @@ module.exports = clientHandler = (socket, manager) => {
 
 
     socket.on('logout', (clientId) => {
+        manager.removeUser(clientId);
         console.log(clientId)
     });
 
@@ -81,8 +85,15 @@ module.exports = clientHandler = (socket, manager) => {
         return cb(manager.getUsers());
     })
 
-    socket.on('getClients', ({}, cb) => {
+    socket.on('getClients', (data, cb) => {
+        console.log(manager.getClients())
         return cb(manager.getClients());
+    })
+
+    socket.on('message', (data, cb) => {
+        manager.addMessage(data);
+        socket.broadcast.emit('message', data)
+        return cb(true);
     })
 
 }
