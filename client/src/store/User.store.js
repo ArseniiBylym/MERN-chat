@@ -58,7 +58,6 @@ export class User {
     loginUser = ({email, password}) => {
         this.fetching = true;
         return socket.login({email, password}, result => {
-            console.log(result);
             if (result.error) {
                 this.fetching = false;
                 this.fetchedFailed = true;
@@ -76,13 +75,13 @@ export class User {
     };
 
     logoutUser = () => {
-        // return socket.logout(this.user, result => {
-        //     if (result.error) {
-        //         return false;
-        //     }
-        // });
+        socket.logout(this.user._id);
         this.user = null;
         localStorage.removeItem('userToken');
+    };
+
+    leaveUser = async () => {
+        socket.logout(this.user._id);
     };
 
     clearError = (type, name) => {
@@ -99,4 +98,5 @@ decorate(User, {
     registerError: observable,
     fetched: computed,
     register: action,
+    leaveUser: action,
 });

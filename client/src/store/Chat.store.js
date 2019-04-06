@@ -27,7 +27,6 @@ export class Chat {
 
     getConectedUsers = () => {
         socket.getClients(result => {
-            console.log('conected', result);
             if (result) {
                 const obj = {};
                 result.forEach(item => {
@@ -35,16 +34,24 @@ export class Chat {
                 });
                 this.conectedUsers = obj;
             }
-            console.log(this.conectedUsers);
         });
     };
 
-    updateUsersHandler = user => {
-        const updatedUsers = this.conectedUsers.map(item => {
-            if (item.id === user.id) return user;
-            return item;
-        });
-        this.conectedUsers = updatedUsers;
+    registerUser = (user, clientId) => {
+        this.users.push(user);
+        if (!this.conectedUsers[user._id]) {
+            this.conectedUsers[user._id] = clientId;
+        }
+    };
+
+    joinUser = client => {
+        this.conectedUsers = {...this.conectedUsers, ...client};
+    };
+
+    leaveUser = userId => {
+        if (this.conectedUsers[userId]) {
+            delete this.conectedUsers[userId];
+        }
     };
 
     get getMessages() {

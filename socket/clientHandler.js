@@ -27,6 +27,7 @@ module.exports = clientHandler = (socket, manager) => {
                 {expiresIn: '1d'},
             );
             manager.addClient(socket.id, user.id);
+            socket.broadcast.emit('register', user.toJSON(), socket.id)
             return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             if (error.name === 'ValidationError') {
@@ -55,6 +56,7 @@ module.exports = clientHandler = (socket, manager) => {
                 {expiresIn: '1d'},
             );
             manager.addClient(socket.id, user.id);
+            socket.broadcast.emit('join', {[user.id]: socket.id})
             return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             return cb({error: 'Login failed'});
@@ -69,6 +71,7 @@ module.exports = clientHandler = (socket, manager) => {
             const user = await User.findById(id)
             if (!user)  return cb({error: 'Token is not valid'})
             manager.addClient(socket.id, user.id);
+            socket.broadcast.emit('join', {[user.id]: socket.id});
             return cb({clientId: socket.id, user: user.toJSON(), token});
         } catch (error) {
             return cb({error: 'No user aveilable'})
@@ -76,9 +79,9 @@ module.exports = clientHandler = (socket, manager) => {
     });
 
 
-    socket.on('logout', (clientId) => {
-        manager.removeUser(clientId);
-        console.log(clientId)
+    socket.on('logout', (userId) => {
+        manager.removeClient(userId);
+        socket.broadcast.emit('leave', userId);
     });
 
     socket.on('getUsers', (data, cb) => {
@@ -86,7 +89,6 @@ module.exports = clientHandler = (socket, manager) => {
     })
 
     socket.on('getClients', (data, cb) => {
-        console.log(manager.getClients())
         return cb(manager.getClients());
     })
 

@@ -11,8 +11,8 @@ module.exports = clientManager = () => {
     }
 
     const getUsers = () => users
-
     const getClients = () => clients;
+    const getMessages = () => messages;
 
     const addClient = (clientId, userId) => {
         const conectedClient = clients.find(item => item.userId === userId);
@@ -23,8 +23,8 @@ module.exports = clientManager = () => {
         }
     }
 
-    const removeClient = (clientId) => {
-        clients = clients.filter(item => item.clientId !== clientId);
+    const removeClient = (userId) => {
+        clients = clients.filter(item => item.userId !== userId);
     }
 
     const addMessage = data => {
@@ -35,6 +35,7 @@ module.exports = clientManager = () => {
         initUsersFromDB,
         getUsers,
         getClients,
+        getMessages,
         addClient,
         removeClient,
         addMessage

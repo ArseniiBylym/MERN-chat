@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import {ChatStore} from '../store';
 
 class Socket {
     client = io.connect('http://localhost:5000');
@@ -16,8 +15,8 @@ class Socket {
         this.client.emit('login', {email, password}, cb);
     };
 
-    logout = (email, cb) => {
-        this.client.emit('logout', email, cb);
+    logout = (userId, cb) => {
+        this.client.emit('logout', userId);
     };
 
     getUsers = cb => {
@@ -32,9 +31,11 @@ class Socket {
         this.client.emit('message', data, cb);
     };
 
-    initHandlers = (userStore, chatStore) => {
+    initHandlers = chatStore => {
         this.client.on('message', chatStore.recieveMessage);
-        // this.client.on('update users', ChatStore.updateUsersHandler);
+        this.client.on('register', chatStore.registerUser);
+        this.client.on('join', chatStore.joinUser);
+        this.client.on('leave', chatStore.leaveUser);
     };
 }
 
