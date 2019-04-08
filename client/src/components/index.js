@@ -5,3 +5,4 @@ export * from './UserList';
 export * from './UserProfile';
 export * from './ChatInput';
 export * from './Message';
+export * from './Icon';

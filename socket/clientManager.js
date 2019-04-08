@@ -7,7 +7,11 @@ module.exports = clientManager = () => {
 
     const initUsersFromDB = async () => {
         const result = await User.find().select('-password -__v').exec();
-        if(result) users = result;
+        if(result) {
+            users = result.map(item => {
+                return {...item.toObject(), location: null};
+            });
+        }
     }
 
     const getUsers = () => users
@@ -31,6 +35,36 @@ module.exports = clientManager = () => {
         messages.push(data)
     }
 
+    showLocation = (userId, location) => {
+        let currentUser = users.find(item => item._id.toString() === userId);
+        if (currentUser) {
+            currentUser.location = location;
+        }
+    }
+
+    hideLocation = userId => {
+        const currentUser = users.find(item => item._id.toString() === userId);
+        if (currentUser) {
+            currentUser.location = null;
+        }
+    }
+
+    updateProfile = async (userId, data) => {
+        try {
+            let user = await User.findById(userId).exec();
+            let currentUser = users.find(item => item._id.toString() === userId);
+            console.log(user)
+            for (let key in data) {
+                user[key] = data[key];
+                currentUser[key] = data[key];
+            }
+            user.save();
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
     return {
         initUsersFromDB,
         getUsers,
@@ -38,6 +72,9 @@ module.exports = clientManager = () => {
         getMessages,
         addClient,
         removeClient,
-        addMessage
+        addMessage,
+        showLocation,
+        hideLocation,
+        updateProfile
     }
 }

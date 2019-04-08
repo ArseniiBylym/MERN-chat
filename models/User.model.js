@@ -14,6 +14,7 @@ const userSchema = new Schema({
         },
         index: true,
     },
+    avatar: {type: String, default: ''},
     password: {type: String, required: [true, 'Password is required']},
 });
 

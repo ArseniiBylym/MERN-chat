@@ -87,6 +87,12 @@ export class User {
     clearError = (type, name) => {
         delete this[type][name];
     };
+
+    updateProfile = data => {
+        socket.updateProfile(this.user._id, data);
+        this.user = {...this.user, ...data};
+        console.log(this.user);
+    }
 }
 
 decorate(User, {
@@ -99,4 +105,5 @@ decorate(User, {
     fetched: computed,
     register: action,
     leaveUser: action,
+    updateProfile: action,
 });

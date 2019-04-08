@@ -4,8 +4,8 @@ import Paper from '@material-ui/core/Paper';
 
 export const Message = props => {
     return (
-        <div className="Message my-1">
-            <Paper className="p-2">
+        <div className="Message my-3">
+            <Paper className={`p-2 ${props.position === 'right' ? 'ml-5' : 'mr-5'}`}>
                 <div className={`Message__user d-flex flex-row align-items-center ${props.position === 'right' ? 'justify-content-end' : ''}`}>
                     {props.position === 'right' && (
                         <div className="text-center mx-2">
@@ -24,7 +24,7 @@ export const Message = props => {
                     )}
                 </div>
 
-                <div className="Message__text">{props.text}</div>
+                <div className="Message__text ml-4">{props.text}</div>
             </Paper>
         </div>
     );

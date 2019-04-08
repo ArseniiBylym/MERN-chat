@@ -9,12 +9,11 @@ export const Home = observer(props => {
     const userStore = useContext(UserStore);
     const chatStore = useContext(ChatStore);
     useEffect(() => {
-        chatStore.getUsers();
-    });
-
-    const logoutHandler = () => {
-        userStore.logoutUser();
-    };
+        // console.log(chatStore.users)
+        if (!chatStore.users) {
+            chatStore.getUsers();
+        }
+    }, []);
 
     if (!userStore.fetchedSuccess && !userStore.fetchedFailed) return null;
     if (!userStore.user) {

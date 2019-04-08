@@ -9,10 +9,10 @@ export const Chat = props => {
                 <div className="col-12">
                     <UserProfile />
                 </div>
-                <div className="col-6">
+                <div className="col-8 p-0 px-1">
                     <ChatBoard />
                 </div>
-                <div className="col-6">
+                <div className="col-4 p-0 px-1">
                     <UserList />
                 </div>
             </div>

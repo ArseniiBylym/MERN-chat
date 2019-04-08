@@ -7,6 +7,7 @@ export class Chat {
     messages = [];
 
     get userList() {
+        if (!this.users) return null;
         return this.users.map((item, i) => {
             if (this.conectedUsers[item._id]) {
                 return {
@@ -16,6 +17,14 @@ export class Chat {
                 };
             }
             return item;
+        });
+    }
+
+    get usersWithLocation() {
+        if (!this.userList) return [];
+        const arr = this.userList.slice();
+        return arr.filter(item => {
+            return item.conected && item.location;
         });
     }
 
@@ -54,6 +63,46 @@ export class Chat {
         }
     };
 
+    updateUser = user => {
+        let currentUser = this.users.find(item => item._id === user._id);
+        if (currentUser) {
+            currentUser = user;
+        }
+    };
+
+    updateLocation = (userId, location) => {
+        if (location) {
+            socket.showUserLocation(userId, location);
+            this.showLocation(userId, location);
+        } else {
+            console.log('111');
+            socket.hideUserLocation(userId);
+            this.hideLocation(userId);
+        }
+    };
+
+    showLocation = (userId, location) => {
+        const currentUser = this.users.find(item => item._id === userId);
+        if (currentUser) {
+            console.log(currentUser);
+            currentUser.location = location;
+        }
+    };
+
+    hideLocation = userId => {
+        const currentUser = this.users.find(item => item._id === userId);
+        if (currentUser) {
+            console.log(currentUser);
+            delete currentUser.location;
+        }
+    };
+
+    fetchMessages = () => {
+        socket.getMessages(result => {
+            this.messages = result;
+        });
+    };
+
     get getMessages() {
         return this.messages.map(item => {
             const author = this.users.find(user => user._id === item.userId);
@@ -77,6 +126,17 @@ export class Chat {
             this.messages.push(data);
         });
     };
+
+    updateProfile = (userId, data) => {
+        const currentUser = this.users.find(item => item._id === userId);
+        if (currentUser) {
+            for (const key in data) {
+                if (key) {
+                    currentUser[key] = data[key];
+                }
+            }
+        }
+    };
 }
 
 decorate(Chat, {
@@ -89,4 +149,10 @@ decorate(Chat, {
     getMessage: action,
     sendMessage: action,
     getMessages: computed,
+    updateUser: action,
+    showLocation: action,
+    hideLocation: action,
+    updateLocation: action,
+    usersWithLocation: computed,
+    updateProfile: action,
 });

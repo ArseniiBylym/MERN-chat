@@ -1,15 +1,24 @@
-import React, {useState, useEffect} from 'react';
-import {Map as LeafletMap, LayersControl, TileLayer, Marker, Popup} from 'react-leaflet';
+import React, {useState, useEffect, useContext} from 'react';
+import {Map as LeafletMap, LayersControl, TileLayer} from 'react-leaflet';
+import {observer} from 'mobx-react-lite';
+import {ChatStore, UserStore} from '../store';
+import {Icon} from '.';
 
 const {BaseLayer} = LayersControl;
 
-export const Map = props => {
+export const Map = observer(props => {
     const [userCoords, setUserCoords] = useState(null);
+    const chatStore = useContext(ChatStore);
+    const userStore = useContext(UserStore);
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
             setUserCoords([position.coords.latitude, position.coords.longitude]);
         });
     }, []);
+
+    const avatars = chatStore.usersWithLocation.map(user => {
+        return <Icon key={user._id} {...user} owner={user._id === userStore.user._id} />;
+    });
 
     if (!userCoords) return null;
     return (
@@ -24,7 +33,8 @@ export const Map = props => {
                         url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
                     />
                 </BaseLayer>
+                {avatars}
             </LayersControl>
         </LeafletMap>
     );
-};
+});

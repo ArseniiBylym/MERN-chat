@@ -13,6 +13,9 @@ const defaultForm = {
 export const Login = observer(props => {
     const [form, setForm] = useState(defaultForm);
     const userStore = useContext(UserStore);
+    useEffect(() => {
+        console.log('Login');
+    }, []);
 
     const onChangeHandler = e => {
         if (userStore.loginError && userStore.loginError[e.target.name]) {
