@@ -1,80 +1,98 @@
 const User = require('../models/User.model');
 
 module.exports = clientManager = () => {
-    let users = [];
-    let clients = [];
-    const messages = [];
+    const users = {};
+    const rooms = ['general'];
+    const messages = {
+        general: []
+    };
 
     const initUsersFromDB = async () => {
-        const result = await User.find().select('-password -__v').exec();
-        if(result) {
-            users = result.map(item => {
-                return {...item.toObject(), location: null};
-            });
-        }
-    }
-
-    const getUsers = () => users
-    const getClients = () => clients;
-    const getMessages = () => messages;
-
-    const addClient = (clientId, userId) => {
-        const conectedClient = clients.find(item => item.userId === userId);
-        if (conectedClient) {
-            conectedClient.clientId = clientId;
-        } else {
-            clients.push({clientId, userId})
-        }
-    }
-
-    const removeClient = (userId) => {
-        clients = clients.filter(item => item.userId !== userId);
-    }
-
-    const addMessage = data => {
-        messages.push(data)
-    }
-
-    showLocation = (userId, location) => {
-        let currentUser = users.find(item => item._id.toString() === userId);
-        if (currentUser) {
-            currentUser.location = location;
-        }
-    }
-
-    hideLocation = userId => {
-        const currentUser = users.find(item => item._id.toString() === userId);
-        if (currentUser) {
-            currentUser.location = null;
-        }
-    }
-
-    updateProfile = async (userId, data) => {
         try {
-            let user = await User.findById(userId).exec();
-            let currentUser = users.find(item => item._id.toString() === userId);
-            console.log(user)
-            for (let key in data) {
-                user[key] = data[key];
-                currentUser[key] = data[key];
+            const result = await User.find().exec();
+            if(result) {
+                result.forEach(item => {
+                    users[item._id.toString()] = {
+                        ...item.toJSON(),
+                        location: null, 
+                        clientId: null,
+                    }
+    
+                })
             }
-            user.save();
         } catch (error) {
             console.log(error);
         }
+    }
 
+    const getUsers = () => users;
+    const getUserById = userId => users[userId];
+    const getUserWithParams = (userId, params) => {
+        const data = {userId}
+        params.forEach(item => data[item] = users[userId][item]) 
+        return data;
+    }
+    const getMessages = (room = 'general') => messages[room];
+
+    const addClient = (clientId, userId) => {
+        users[userId].clientId = clientId;
+    }
+
+    const removeClient = (userId) => {
+        users[userId].clientId = null;
+        users[userId].location = null;
+    }
+
+    const addRoom = roomName => rooms.push(roomName);
+
+    const getRooms = () => rooms;
+
+    const addMessage = (room = 'general', message) => {
+        messages[room].push(message);
+    }
+
+    const showLocation = (userId, location) => {
+        users[userId].location = location;
+    }
+
+    const hideLocation = userId => {
+        users[userId].location = null;
+    }
+
+    const updateUserName = async (userId, name) => {
+        try {
+            let user = await User.findById(userId).exec();
+            user.name = name;
+            user.save()
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateUserAvatar = async (userId, avatar) => {
+        try {
+            let user = await User.findById(userId).exec();
+            user.avatar = avatar;
+            user.save()
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return {
         initUsersFromDB,
         getUsers,
-        getClients,
         getMessages,
         addClient,
         removeClient,
         addMessage,
         showLocation,
         hideLocation,
-        updateProfile
+        addRoom,
+        getRooms,
+        getUserById,
+        getUserWithParams,
+        updateUserName,
+        updateUserAvatar,
     }
 }

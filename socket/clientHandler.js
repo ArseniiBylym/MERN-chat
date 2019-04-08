@@ -28,8 +28,8 @@ module.exports = clientHandler = (socket, manager) => {
                 {expiresIn: '1d'},
             );
             manager.addClient(socket.id, user.id);
-            socket.broadcast.emit('register', user.toJSON(), socket.id);
-            return cb({clientId: socket.id, user: user.toJSON(), token});
+            socket.broadcast.emit('register', manager.getUserById(user.id));
+            return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
             if (error.name === 'ValidationError') {
                 console.log(error.errors);
@@ -53,8 +53,8 @@ module.exports = clientHandler = (socket, manager) => {
             }
             const token = jwt.sign({email, id: user.id.toString()}, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
             manager.addClient(socket.id, user.id);
-            socket.broadcast.emit('join', {[user.id]: socket.id});
-            return cb({clientId: socket.id, user: user.toJSON(), token});
+            socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
+            return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
             return cb({error: 'Login failed'});
         }
@@ -67,8 +67,8 @@ module.exports = clientHandler = (socket, manager) => {
             const user = await User.findById(id);
             if (!user) return cb({error: 'Token is not valid'});
             manager.addClient(socket.id, user.id);
-            socket.broadcast.emit('join', {[user.id]: socket.id});
-            return cb({clientId: socket.id, user: user.toJSON(), token});
+            socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
+            return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
             return cb({error: 'No user aveilable'});
         }
@@ -76,42 +76,39 @@ module.exports = clientHandler = (socket, manager) => {
 
     socket.on('logout', userId => {
         manager.removeClient(userId);
-        socket.broadcast.emit('leave', userId);
+        socket.broadcast.emit('leave', manager.getUserWithParams(userId, ['location', 'clientId']));
     });
 
     socket.on('getUsers', (data, cb) => {
         return cb(manager.getUsers());
     });
 
-    socket.on('getClients', (data, cb) => {
-        return cb(manager.getClients());
+    socket.on('getMessages', (room, cb) => {
+        return cb(manager.getMessages(room));
     });
 
-    socket.on('getMessages', cb => {
-        return cb(manager.getMessages());
-    });
-
-    socket.on('message', (data, cb) => {
-        manager.addMessage(data);
-        socket.broadcast.emit('message', data);
-        return cb(true);
+    socket.on('message', (room, data) => {
+        manager.addMessage(room, data);
+        socket.broadcast.emit('message', room, data);
     });
 
     socket.on('showLocation', (userId, location) => {
-        console.log(location);
         manager.showLocation(userId, location);
-        socket.broadcast.emit('showLocation', userId, location);
+        socket.broadcast.emit('showLocation', manager.getUserWithParams(userId, ['location']));
     });
 
     socket.on('hideLocation', userId => {
-        console.log(userId)
         manager.hideLocation(userId);
-        socket.broadcast.emit('hideLocation', userId);
+        socket.broadcast.emit('hideLocation', manager.getUserWithParams(userId, ['location']));
     });
 
-    socket.on('updateProfile', (userId, data) => {
-        console.log('updateProfile', userId);
-        manager.updateProfile(userId, data);
-        io.getIO().emit('updateProfile', userId, data)
+    socket.on('updateUserName', (userId, name) => {
+        manager.updateUserName(userId, name);
+        socket.broadcast.emit('updateUserName', manager.getUserWithParams(userId, ['name']))
+    })
+
+    socket.on('updateUserAvatar', (userId, avatar) => {
+        manager.updateUserAvatar(userId, avatar);
+        socket.broadcast.emit('updateUserAvatar', manager.getUserWithParams(userId, ['avatar']))
     })
 };
