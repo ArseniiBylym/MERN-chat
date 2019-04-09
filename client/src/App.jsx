@@ -8,10 +8,8 @@ const App = props => {
     const userStore = useContext(UserStore);
     const chatStore = useContext(ChatStore);
     useEffect(() => {
-        console.log('hellsdflskf')
-        userStore.getUser(); // get all users list
-        socket.initHandlers(chatStore); // init handlers for all incoming sockets
-        // leave chat when user close browser tab
+        userStore.getUser();
+        socket.initHandlers(chatStore);
         window.addEventListener('beforeunload', async () => {
             await userStore.leaveUser();
             return true;

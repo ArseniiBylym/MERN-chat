@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 import {observer} from 'mobx-react-lite';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -14,7 +14,7 @@ export const ChatInput = observer(props => {
     };
 
     const sendMessageHandler = () => {
-        chatStore.sendMessage(message, userStore.user);
+        chatStore.sendMessage(message, userStore.user._id);
         setMessage('');
     };
 

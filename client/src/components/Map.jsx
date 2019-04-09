@@ -16,7 +16,11 @@ export const Map = observer(props => {
         });
     }, []);
 
-    const avatars = chatStore.usersWithLocation.map(user => {
+    useEffect(() => {
+        console.log(chatStore.users)
+    })
+
+    const avatars = chatStore.visibleUsers.map(user => {
         return <Icon key={user._id} {...user} owner={user._id === userStore.user._id} />;
     });
 

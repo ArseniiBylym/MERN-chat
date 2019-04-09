@@ -27,12 +27,21 @@ module.exports = clientManager = () => {
 
     const getUsers = () => users;
     const getUserById = userId => users[userId];
-    const getUserWithParams = (userId, params) => {
-        const data = {userId}
-        params.forEach(item => data[item] = users[userId][item]) 
+    const getUserWithParams = (_id, params) => {
+        const data = {_id}
+        params.forEach(item => data[item] = users[_id][item]) 
         return data;
     }
     const getMessages = (room = 'general') => messages[room];
+    const getAllMessages = () => messages;
+
+    const registerUser = (user, clientId) => {
+        users[user._id] = {
+            ...user,
+            location: null,
+            clientId,
+        };
+    }
 
     const addClient = (clientId, userId) => {
         users[userId].clientId = clientId;
@@ -94,5 +103,7 @@ module.exports = clientManager = () => {
         getUserWithParams,
         updateUserName,
         updateUserAvatar,
+        registerUser,
+        getAllMessages
     }
 }

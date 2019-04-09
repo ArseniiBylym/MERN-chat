@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useContext} from 'react';
 import {Redirect} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -34,7 +34,6 @@ export const Register = observer(props => {
     };
 
     const submitForm = () => {
-        console.log(form);
         userStore.registerUser(form);
     };
 

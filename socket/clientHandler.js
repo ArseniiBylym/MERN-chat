@@ -27,7 +27,7 @@ module.exports = clientHandler = (socket, manager) => {
                 process.env.JWT_SECRET_KEY,
                 {expiresIn: '1d'},
             );
-            manager.addClient(socket.id, user.id);
+            manager.registerUser(user.toJSON, socket.id)
             socket.broadcast.emit('register', manager.getUserById(user.id));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
@@ -53,9 +53,11 @@ module.exports = clientHandler = (socket, manager) => {
             }
             const token = jwt.sign({email, id: user.id.toString()}, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
             manager.addClient(socket.id, user.id);
+            // io.getIO().emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
+            console.log(error);
             return cb({error: 'Login failed'});
         }
     });
@@ -68,6 +70,7 @@ module.exports = clientHandler = (socket, manager) => {
             if (!user) return cb({error: 'Token is not valid'});
             manager.addClient(socket.id, user.id);
             socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
+            // io.getIO().emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
             return cb({error: 'No user aveilable'});

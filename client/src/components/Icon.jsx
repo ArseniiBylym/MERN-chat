@@ -17,9 +17,7 @@ export const Icon = props => {
     return (
         <Marker ref={markerRef} position={[props.location.lat, props.location.long]} icon={icon}>
             <Popup closeOnClick={false} closeButton={false} autoClose={false} keepInView={true} idOpen={true}>
-                <div className="custom__user_map_icon">
-                    <img alt="user" src={props.avatar} />
-                </div>
+                <div className="custom__user_map_icon">{props.avatar ? <img alt="user" src={props.avatar} /> : <h5 className="mb-0">{props.name[0].toUpperCase()}</h5>}</div>
             </Popup>
         </Marker>
     );

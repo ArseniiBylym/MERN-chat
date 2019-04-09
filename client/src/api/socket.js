@@ -15,7 +15,7 @@ class Socket {
         this.client.emit('login', {email, password}, cb);
     };
 
-    logout = (userId, cb) => {
+    logout = userId => {
         this.client.emit('logout', userId);
     };
 
@@ -23,17 +23,19 @@ class Socket {
         this.client.emit('getUsers', null, cb);
     };
 
-    updateProfile = (userId, data) => {
-        this.client.emit('updateProfile', userId, data);
+    updataUserName = (userId, name) => {
+        this.client.emit('updataUserName', userId, name);
+    };
+
+    updateUserAvatar = (userId, avatar) => {
+        this.client.emit('updateUserAvatar', userId, avatar);
     };
 
     showUserLocation = (userId, location) => {
-        console.log(location);
         this.client.emit('showLocation', userId, location);
     };
 
     hideUserLocation = userId => {
-        console.log(userId);
         this.client.emit('hideLocation', userId);
     };
 
@@ -41,20 +43,21 @@ class Socket {
         this.client.emit('getClients', null, cb);
     };
 
-    sendMessage = (data, cb) => {
-        this.client.emit('message', data, cb);
+    sendMessage = (room, message) => {
+        this.client.emit('message', room, message);
     };
 
-    getMessages = cb => {
-        this.client.emit('getMessages', cb);
+    getMessages = (room, cb) => {
+        this.client.emit('getMessages', room, cb);
     };
 
     initHandlers = chatStore => {
-        this.client.on('message', chatStore.recieveMessage);
         this.client.on('register', chatStore.registerUser);
         this.client.on('join', chatStore.joinUser);
         this.client.on('leave', chatStore.leaveUser);
-        this.client.on('updateUser', chatStore.updateUser);
+        this.client.on('message', chatStore.recieveMessage);
+        this.client.on('updateUserName', chatStore.updateUserName);
+        this.client.on('updateUserAvatar', chatStore.updateUserAvatar);
         this.client.on('showLocation', chatStore.showLocation);
         this.client.on('hideLocation', chatStore.hideLocation);
         this.client.on('updateProfile', chatStore.updateProfile);

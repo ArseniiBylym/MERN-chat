@@ -3,156 +3,123 @@ import {socket} from '../api/socket';
 
 export class Chat {
     users = null;
-    conectedUsers = {};
-    messages = [];
+    messages = {
+        general: [],
+    };
+    rooms = [];
+    activeRoom = 'general';
 
-    get userList() {
-        if (!this.users) return null;
-        return this.users.map((item, i) => {
-            if (this.conectedUsers[item._id]) {
-                return {
-                    ...item,
-                    conected: true,
-                    clientId: this.conectedUsers[item._id],
-                };
-            }
-            return item;
-        });
+    // Users section
+    get usersArray() {
+        if (!this.users) return [];
+        return Object.values(this.users);
     }
 
-    get usersWithLocation() {
-        if (!this.userList) return [];
-        const arr = this.userList.slice();
-        return arr.filter(item => {
-            return item.conected && item.location;
-        });
+    get visibleUsers() {
+        if (!this.users) return [];
+        return Object.values(this.users).filter(user => user.location);
     }
 
-    getUsers = () => {
+    getUsers = userId => {
         socket.getUsers(result => {
-            if (result) this.users = result;
-        });
-    };
-
-    getConectedUsers = () => {
-        socket.getClients(result => {
             if (result) {
-                const obj = {};
-                result.forEach(item => {
-                    obj[item.userId] = item.clientId;
-                });
-                this.conectedUsers = obj;
+                this.users = result;
             }
         });
     };
 
-    registerUser = (user, clientId) => {
-        this.users.push(user);
-        if (!this.conectedUsers[user._id]) {
-            this.conectedUsers[user._id] = clientId;
-        }
+    registerUser = user => {
+        this.users[user._id] = user;
     };
 
-    joinUser = client => {
-        this.conectedUsers = {...this.conectedUsers, ...client};
+    joinUser = user => {
+        this.users[user._id].location = user.location;
+        this.users[user._id].clientId = user.clientId;
     };
 
-    leaveUser = userId => {
-        if (this.conectedUsers[userId]) {
-            delete this.conectedUsers[userId];
-        }
+    leaveUser = user => {
+        this.users[user._id].location = null;
+        this.users[user._id].clientId = null;
     };
 
-    updateUser = user => {
-        let currentUser = this.users.find(item => item._id === user._id);
-        if (currentUser) {
-            currentUser = user;
-        }
+    updateUserName = user => {
+        this.users[user._id].name = user.name;
     };
 
+    updateUserAvatar = user => {
+        this.users[user._id].avatar = user.avatar;
+    };
+    // Users section
+
+    // Location section
     updateLocation = (userId, location) => {
         if (location) {
             socket.showUserLocation(userId, location);
-            this.showLocation(userId, location);
+            this.users[userId].location = location;
         } else {
-            console.log('111');
             socket.hideUserLocation(userId);
-            this.hideLocation(userId);
+            this.users[userId].location = null;
         }
     };
 
-    showLocation = (userId, location) => {
-        const currentUser = this.users.find(item => item._id === userId);
-        if (currentUser) {
-            console.log(currentUser);
-            currentUser.location = location;
+    showLocation = data => {
+        if (this.users[data._id]) {
+            this.users[data._id].location = data.location;
         }
     };
-
-    hideLocation = userId => {
-        const currentUser = this.users.find(item => item._id === userId);
-        if (currentUser) {
-            console.log(currentUser);
-            delete currentUser.location;
+    hideLocation = data => {
+        if (this.users[data._id]) {
+            this.users[data._id].location = data.location;
         }
     };
+    // Location section
 
+    // Messages section
     fetchMessages = () => {
-        socket.getMessages(result => {
-            this.messages = result;
+        socket.getMessages(this.activeRoom, result => {
+            this.messages[this.activeRoom] = result;
         });
     };
-
-    get getMessages() {
-        return this.messages.map(item => {
-            const author = this.users.find(user => user._id === item.userId);
-            return {
-                ...item,
-                ...author,
-            };
-        });
-    }
-    recieveMessage = message => {
-        this.messages.push(message);
+    recieveMessage = (room = 'general', message) => {
+        this.messages[room].push(message);
     };
-    sendMessage = (text, user) => {
-        const data = {
+    sendMessage = (text, userId) => {
+        const message = {
             text,
-            userId: user._id,
+            userId,
             date: new Date(),
         };
 
-        return socket.sendMessage(data, result => {
-            this.messages.push(data);
-        });
+        socket.sendMessage(this.activeRoom, message);
+        this.messages[this.activeRoom].push(message);
     };
 
-    updateProfile = (userId, data) => {
-        const currentUser = this.users.find(item => item._id === userId);
-        if (currentUser) {
-            for (const key in data) {
-                if (key) {
-                    currentUser[key] = data[key];
-                }
-            }
-        }
-    };
+    get roomMessages() {
+        return this.messages[this.activeRoom];
+    }
+    // Messages section
 }
 
 decorate(Chat, {
     users: observable,
-    conectedUsers: observable,
-    getUsers: action,
-    updateUsersHandler: action,
-    userList: computed,
     messages: observable,
-    getMessage: action,
-    sendMessage: action,
-    getMessages: computed,
-    updateUser: action,
-    showLocation: action,
-    hideLocation: action,
+    rooms: observable,
+    activeRoom: observable,
+
+    usersArray: computed,
+    visibleUsers: computed,
+
+    getUsers: action,
+    registerUser: action,
+    joinUser: action,
+    leaveUser: action,
+    updateUserName: action,
+    updateUserAvatar: action,
+
     updateLocation: action,
-    usersWithLocation: computed,
-    updateProfile: action,
+
+    fetchMessages: action,
+    recieveMessage: action,
+    sendMessage: action,
+    roomMessages: computed,
 });

@@ -9,9 +9,8 @@ export const Home = observer(props => {
     const userStore = useContext(UserStore);
     const chatStore = useContext(ChatStore);
     useEffect(() => {
-        // console.log(chatStore.users)
-        if (!chatStore.users) {
-            chatStore.getUsers();
+        if (!chatStore.users && userStore.user) {
+            chatStore.getUsers(userStore.user._id);
         }
     }, []);
 

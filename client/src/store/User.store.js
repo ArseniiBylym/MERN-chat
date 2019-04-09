@@ -26,13 +26,12 @@ export class User {
                 this.fetching = false;
                 this.user = null;
                 localStorage.removeItem('userToken');
-                return result.error;
+                return;
             }
             this.fetching = false;
             this.fetchedSuccess = true;
             this.user = result.user;
             localStorage.setItem('userToken', result.token);
-            return result.user;
         });
     };
 
@@ -48,8 +47,8 @@ export class User {
                 }
             }
             this.fetching = false;
-            this.user = result.user;
             this.fetchedSuccess = true;
+            this.user = result.user;
             localStorage.setItem('userToken', result.token);
             return result.user;
         });
@@ -67,8 +66,8 @@ export class User {
                 }
             }
             this.fetching = false;
-            this.user = result.user;
             this.fetchedSuccess = true;
+            this.user = result.user;
             localStorage.setItem('userToken', result.token);
             return result.user;
         });
@@ -88,11 +87,15 @@ export class User {
         delete this[type][name];
     };
 
-    updateProfile = data => {
-        socket.updateProfile(this.user._id, data);
-        this.user = {...this.user, ...data};
-        console.log(this.user);
-    }
+    updateUserName = name => {
+        socket.updateUserName(this.user._id, name);
+        this.user.name = name;
+    };
+
+    updateUserAvatart = avatar => {
+        socket.updateUserAvatart(this.user._id, avatar);
+        this.user.avatar = avatar;
+    };
 }
 
 decorate(User, {
@@ -105,5 +108,6 @@ decorate(User, {
     fetched: computed,
     register: action,
     leaveUser: action,
-    updateProfile: action,
+    updateUserName: action,
+    updateUserAvatar: action,
 });
