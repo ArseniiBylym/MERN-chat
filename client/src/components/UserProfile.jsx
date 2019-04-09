@@ -31,7 +31,7 @@ export const UserProfile = observer(props => {
 
     const changeAvatarHandler = e => {
         toBase64(e.target.files[0]).then(file => {
-            userStore.updateProfile({avatar: file});
+            userStore.updateUserAvatar(file);
         });
     };
 

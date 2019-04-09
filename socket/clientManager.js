@@ -82,7 +82,8 @@ module.exports = clientManager = () => {
         try {
             let user = await User.findById(userId).exec();
             user.avatar = avatar;
-            user.save()
+            await user.save()
+            return;
         } catch (error) {
             console.log(error);
         }

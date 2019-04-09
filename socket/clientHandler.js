@@ -110,8 +110,8 @@ module.exports = clientHandler = (socket, manager) => {
         socket.broadcast.emit('updateUserName', manager.getUserWithParams(userId, ['name']))
     })
 
-    socket.on('updateUserAvatar', (userId, avatar) => {
-        manager.updateUserAvatar(userId, avatar);
-        socket.broadcast.emit('updateUserAvatar', manager.getUserWithParams(userId, ['avatar']))
+    socket.on('updateUserAvatar', async (userId, avatar) => {
+        await manager.updateUserAvatar(userId, avatar);
+        socket.broadcast.emit('updateUserAvatar', {userId, avatar})
     })
 };

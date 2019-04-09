@@ -1,5 +1,6 @@
 import {observable, action, decorate, computed} from 'mobx';
 import {socket} from '../api/socket';
+import {globalStore} from '.';
 
 export class Chat {
     users = null;
@@ -8,19 +9,30 @@ export class Chat {
     };
     rooms = [];
     activeRoom = 'general';
+    focusedCoords = [];
 
     // Users section
     get usersArray() {
-        if (!this.users) return [];
-        return Object.values(this.users);
+        if (!this.users || !globalStore.userStore.user) return [];
+        return Object.values(this.users).filter(user => user._id !== globalStore.userStore.user._id);
     }
 
     get visibleUsers() {
         if (!this.users) return [];
-        return Object.values(this.users).filter(user => user.location);
+        return Object.values(this.users)
+            .filter(user => user.location)
+            .map(user => {
+                if (user._id === globalStore.userStore.user._id) {
+                    return {
+                        ...user,
+                        owner: true,
+                    };
+                }
+                return user;
+            });
     }
 
-    getUsers = userId => {
+    getUsers = () => {
         socket.getUsers(result => {
             if (result) {
                 this.users = result;
@@ -38,8 +50,10 @@ export class Chat {
     };
 
     leaveUser = user => {
-        this.users[user._id].location = null;
-        this.users[user._id].clientId = null;
+        if (this.users) {
+            this.users[user._id].location = null;
+            this.users[user._id].clientId = null;
+        }
     };
 
     updateUserName = user => {
@@ -47,7 +61,14 @@ export class Chat {
     };
 
     updateUserAvatar = user => {
-        this.users[user._id].avatar = user.avatar;
+        if (this.users[user._id]) {
+            this.users[user._id].avatar = user.avatar;
+        }
+    };
+
+    focusOnUser = userId => {
+        if (!this.users[userId].clientId || !this.users[userId].location) return false;
+        this.focusedCoords = [this.users[userId].location.lat, this.users[userId].location.long];
     };
     // Users section
 
@@ -83,10 +104,10 @@ export class Chat {
     recieveMessage = (room = 'general', message) => {
         this.messages[room].push(message);
     };
-    sendMessage = (text, userId) => {
+    sendMessage = text => {
         const message = {
             text,
-            userId,
+            userId: globalStore.userStore.user._id,
             date: new Date(),
         };
 
@@ -95,7 +116,14 @@ export class Chat {
     };
 
     get roomMessages() {
-        return this.messages[this.activeRoom];
+        if (this.messages[this.activeRoom].length === 0 || !this.users) return [];
+        return this.messages[this.activeRoom].map(message => {
+            return {
+                ...message,
+                user: this.users[message.userId],
+                owner: message.userId === globalStore.userStore.user._id,
+            };
+        });
     }
     // Messages section
 }
@@ -105,6 +133,7 @@ decorate(Chat, {
     messages: observable,
     rooms: observable,
     activeRoom: observable,
+    focusedCoords: observable,
 
     usersArray: computed,
     visibleUsers: computed,

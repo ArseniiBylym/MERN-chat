@@ -2,11 +2,10 @@ import React, {useState, useContext} from 'react';
 import {observer} from 'mobx-react-lite';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import {ChatStore, UserStore} from '../store';
+import {ChatStore} from '../store';
 
 export const ChatInput = observer(props => {
     const chatStore = useContext(ChatStore);
-    const userStore = useContext(UserStore);
     const [message, setMessage] = useState('');
 
     const messageHandler = e => {
@@ -14,7 +13,7 @@ export const ChatInput = observer(props => {
     };
 
     const sendMessageHandler = () => {
-        chatStore.sendMessage(message, userStore.user._id);
+        chatStore.sendMessage(message);
         setMessage('');
     };
 

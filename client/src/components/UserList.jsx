@@ -9,13 +9,16 @@ import {ChatStore} from '../store';
 export const UserList = observer(props => {
     const chatStore = useContext(ChatStore);
 
-    if (!chatStore.users) return null;
+    const userClickHandler = userId => e => {
+        chatStore.focusOnUser(userId);
+    };
+
     return (
         <div className="UserList">
             <Paper className="w-100 p-2 d-flex nowrap flex-column">
                 {chatStore.usersArray.map(item => {
                     return (
-                        <div key={item._id} className="my-1">
+                        <div key={item._id} className="my-1" onClick={userClickHandler(item._id)}>
                             <Chip
                                 avatar={
                                     <Avatar alt="User" src={item.avatar || ''}>
@@ -28,11 +31,14 @@ export const UserList = observer(props => {
                                 onDelete={() => {}}
                                 deleteIcon={
                                     item.clientId ? (
-                                        <span className="text-success h6 ml-auto">
-                                            <IoIosRadioButtonOn className="d-block" />
+                                        <span className="text-success ml-auto d-flex flex-row nowrap align-items-center">
+                                            <span>online</span>
+                                            <span className="mb-0 ml-2 h6">
+                                                <IoIosRadioButtonOn className="d-block" />
+                                            </span>
                                         </span>
                                     ) : (
-                                        <span className="text-success h6 ml-auto">
+                                        <span className="text-success h6 ml-auto mb-0">
                                             <IoIosRadioButtonOff className="d-block" />
                                         </span>
                                     )

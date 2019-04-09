@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {observer} from 'mobx-react-lite';
@@ -98,6 +98,9 @@ export const Register = observer(props => {
                     <Button className="mt-3" variant="contained" color="primary" onClick={submitForm}>
                         Register
                     </Button>
+                    <Link className="text-center text-primary my-3" to="/login">
+                        Already have account
+                    </Link>
                 </div>
             </div>
         </div>

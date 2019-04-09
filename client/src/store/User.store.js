@@ -92,8 +92,8 @@ export class User {
         this.user.name = name;
     };
 
-    updateUserAvatart = avatar => {
-        socket.updateUserAvatart(this.user._id, avatar);
+    updateUserAvatar = avatar => {
+        socket.updateUserAvatar(this.user._id, avatar);
         this.user.avatar = avatar;
     };
 }

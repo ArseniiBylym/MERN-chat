@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {observer} from 'mobx-react-lite';
@@ -13,9 +13,6 @@ const defaultForm = {
 export const Login = observer(props => {
     const [form, setForm] = useState(defaultForm);
     const userStore = useContext(UserStore);
-    useEffect(() => {
-        console.log('Login');
-    }, []);
 
     const onChangeHandler = e => {
         if (userStore.loginError && userStore.loginError[e.target.name]) {
@@ -76,6 +73,9 @@ export const Login = observer(props => {
                     <Button className="mt-3" variant="contained" color="primary" onClick={submitForm}>
                         Login
                     </Button>
+                    <Link className="text-center text-primary my-3" to="/register">
+                        Create new account
+                    </Link>
                 </div>
             </div>
         </div>

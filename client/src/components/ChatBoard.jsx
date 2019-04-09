@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useRef} from 'react';
 import {observer} from 'mobx-react-lite';
 import {Message} from '.';
-import {ChatStore, UserStore} from '../store';
+import {ChatStore} from '../store';
 
 export const ChatBoard = observer(props => {
     const chatStore = useContext(ChatStore);
-    const userStore = useContext(UserStore);
     const container = useRef(false);
 
     useEffect(() => {
@@ -19,21 +18,15 @@ export const ChatBoard = observer(props => {
 
     const messages = chatStore.roomMessages;
 
-    if (messages.length === 0 || !chatStore.users) return null;
     return (
         <div ref={container} className="ChatBoard bg-cream p-2">
-            {messages.length > 0 &&
+            {messages.length ? (
                 messages.map(item => {
-                    return (
-                        <Message
-                            key={item.date}
-                            position={item.userId === userStore.user._id ? 'right' : 'left'}
-                            user={chatStore.users[item.userId]}
-                            date={item.date}
-                            text={item.text}
-                        />
-                    );
-                })}
+                    return <Message key={item.date} {...item} />;
+                })
+            ) : (
+                <h6 className="text-center">You have no active messages</h6>
+            )}
         </div>
     );
 });

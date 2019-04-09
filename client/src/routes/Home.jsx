@@ -8,10 +8,9 @@ import {UserStore, ChatStore} from '../store';
 export const Home = observer(props => {
     const userStore = useContext(UserStore);
     const chatStore = useContext(ChatStore);
+
     useEffect(() => {
-        if (!chatStore.users && userStore.user) {
-            chatStore.getUsers(userStore.user._id);
-        }
+        chatStore.getUsers();
     }, []);
 
     if (!userStore.fetchedSuccess && !userStore.fetchedFailed) return null;

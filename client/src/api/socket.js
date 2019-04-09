@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import {globalStore} from '../store';
 
 class Socket {
     client = io.connect('http://localhost:5000');
@@ -51,16 +52,16 @@ class Socket {
         this.client.emit('getMessages', room, cb);
     };
 
-    initHandlers = chatStore => {
-        this.client.on('register', chatStore.registerUser);
-        this.client.on('join', chatStore.joinUser);
-        this.client.on('leave', chatStore.leaveUser);
-        this.client.on('message', chatStore.recieveMessage);
-        this.client.on('updateUserName', chatStore.updateUserName);
-        this.client.on('updateUserAvatar', chatStore.updateUserAvatar);
-        this.client.on('showLocation', chatStore.showLocation);
-        this.client.on('hideLocation', chatStore.hideLocation);
-        this.client.on('updateProfile', chatStore.updateProfile);
+    initHandlers = () => {
+        this.client.on('register', globalStore.chatStore.registerUser);
+        this.client.on('join', globalStore.chatStore.joinUser);
+        this.client.on('leave', globalStore.chatStore.leaveUser);
+        this.client.on('message', globalStore.chatStore.recieveMessage);
+        this.client.on('updateUserName', globalStore.chatStore.updateUserName);
+        this.client.on('updateUserAvatar', globalStore.chatStore.updateUserAvatar);
+        this.client.on('showLocation', globalStore.chatStore.showLocation);
+        this.client.on('hideLocation', globalStore.chatStore.hideLocation);
+        this.client.on('updateProfile', globalStore.chatStore.updateProfile);
     };
 }
 
