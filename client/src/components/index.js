@@ -6,3 +6,4 @@ export * from './UserProfile';
 export * from './ChatInput';
 export * from './Message';
 export * from './Icon';
+export * from './RoomList';

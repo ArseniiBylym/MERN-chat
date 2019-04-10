@@ -8,8 +8,8 @@ export const ChatBoard = observer(props => {
     const container = useRef(false);
 
     useEffect(() => {
-        chatStore.fetchMessages('general');
-    }, []);
+        chatStore.fetchMessages();
+    }, [chatStore.activeRoom]);
     useEffect(() => {
         if (container.current) {
             container.current.scrollTop = container.current.scrollHeight;

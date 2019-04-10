@@ -53,7 +53,6 @@ module.exports = clientHandler = (socket, manager) => {
             }
             const token = jwt.sign({email, id: user.id.toString()}, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
             manager.addClient(socket.id, user.id);
-            // io.getIO().emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
@@ -70,7 +69,6 @@ module.exports = clientHandler = (socket, manager) => {
             if (!user) return cb({error: 'Token is not valid'});
             manager.addClient(socket.id, user.id);
             socket.broadcast.emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
-            // io.getIO().emit('join', manager.getUserWithParams(user.id, ['location', 'clientId']));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
             return cb({error: 'No user aveilable'});
@@ -113,5 +111,14 @@ module.exports = clientHandler = (socket, manager) => {
     socket.on('updateUserAvatar', async (userId, avatar) => {
         await manager.updateUserAvatar(userId, avatar);
         socket.broadcast.emit('updateUserAvatar', {userId, avatar})
+    })
+
+    socket.on('getRooms', (cb) => {
+        cb(manager.getRooms())
+    })
+
+    socket.on('createRoom', name => {
+        manager.createRoom(name);
+        socket.broadcast.emit('createRoom', name);
     })
 };

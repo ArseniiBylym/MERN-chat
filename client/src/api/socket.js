@@ -52,6 +52,14 @@ class Socket {
         this.client.emit('getMessages', room, cb);
     };
 
+    getRooms = cb => {
+        this.client.emit('getRooms', cb);
+    };
+
+    createRoom = name => {
+        this.client.emit('createRoom', name);
+    };
+
     initHandlers = () => {
         this.client.on('register', globalStore.chatStore.registerUser);
         this.client.on('join', globalStore.chatStore.joinUser);
@@ -62,6 +70,7 @@ class Socket {
         this.client.on('showLocation', globalStore.chatStore.showLocation);
         this.client.on('hideLocation', globalStore.chatStore.hideLocation);
         this.client.on('updateProfile', globalStore.chatStore.updateProfile);
+        this.client.on('createRoom', globalStore.chatStore.addNewRoom);
     };
 }
 

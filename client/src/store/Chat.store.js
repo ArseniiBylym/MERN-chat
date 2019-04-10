@@ -7,7 +7,7 @@ export class Chat {
     messages = {
         general: [],
     };
-    rooms = [];
+    rooms = ['general'];
     activeRoom = 'general';
     focusedCoords = [];
 
@@ -116,6 +116,7 @@ export class Chat {
     };
 
     get roomMessages() {
+        if (!this.messages[this.activeRoom]) return [];
         if (this.messages[this.activeRoom].length === 0 || !this.users) return [];
         return this.messages[this.activeRoom].map(message => {
             return {
@@ -126,6 +127,35 @@ export class Chat {
         });
     }
     // Messages section
+
+    // Room section
+    getRooms = () => {
+        socket.getRooms(result => {
+            if (result) {
+                this.rooms = result;
+                result.forEach(roomName => {
+                    if (roomName !== 'general') {
+                        this.messages[roomName] = [];
+                    }
+                });
+            }
+        });
+    };
+
+    createRoom = name => {
+        if (this.rooms.includes(name)) return false;
+        socket.createRoom(name);
+        this.rooms.push(name);
+    };
+
+    selectRoom = name => {
+        this.activeRoom = name;
+    };
+
+    addNewRoom = name => {
+        this.rooms.push(name);
+        this.messages[name] = [];
+    };
 }
 
 decorate(Chat, {
@@ -151,4 +181,8 @@ decorate(Chat, {
     recieveMessage: action,
     sendMessage: action,
     roomMessages: computed,
+
+    getRooms: action,
+    selectRoom: action,
+    addNewRoom: action,
 });

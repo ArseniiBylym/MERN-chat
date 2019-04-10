@@ -11,6 +11,7 @@ export const Home = observer(props => {
 
     useEffect(() => {
         chatStore.getUsers();
+        chatStore.getRooms();
     }, []);
 
     if (!userStore.fetchedSuccess && !userStore.fetchedFailed) return null;

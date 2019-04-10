@@ -52,7 +52,10 @@ module.exports = clientManager = () => {
         users[userId].location = null;
     }
 
-    const addRoom = roomName => rooms.push(roomName);
+    const createRoom = roomName => {
+        rooms.push(roomName);
+        messages[roomName] = [];
+    }
 
     const getRooms = () => rooms;
 
@@ -98,7 +101,7 @@ module.exports = clientManager = () => {
         addMessage,
         showLocation,
         hideLocation,
-        addRoom,
+        createRoom,
         getRooms,
         getUserById,
         getUserWithParams,

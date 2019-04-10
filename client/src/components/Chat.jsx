@@ -1,5 +1,5 @@
 import React from 'react';
-import {UserProfile, ChatBoard, UserList, ChatInput} from '.';
+import {UserProfile, ChatBoard, UserList, ChatInput, RoomList} from '.';
 import './style.scss';
 
 export const Chat = props => {
@@ -13,6 +13,9 @@ export const Chat = props => {
                     <ChatBoard />
                 </div>
                 <div className="col-4 p-0 px-1">
+                    <div className="mb-2">
+                        <RoomList />
+                    </div>
                     <UserList />
                 </div>
             </div>
