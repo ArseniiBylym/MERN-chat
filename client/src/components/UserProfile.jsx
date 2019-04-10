@@ -1,9 +1,10 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
+import TextField from '@material-ui/core/TextField';
 import {observer} from 'mobx-react-lite';
 import {FaSignOutAlt} from 'react-icons/fa';
 import {UserStore, ChatStore} from '../store';
@@ -11,6 +12,7 @@ import {toBase64} from '../resources/helpers/file';
 
 export const UserProfile = observer(props => {
     const [switcher, setSwitcher] = useState(false);
+    const [editMode, setEditMode] = useState(false);
     const userStore = useContext(UserStore);
     const chatStore = useContext(ChatStore);
 
@@ -35,6 +37,22 @@ export const UserProfile = observer(props => {
         });
     };
 
+    const keyUpHandler = e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (e.target.value) {
+                userStore.updateUserName(e.target.value);
+            }
+            setEditMode(false);
+            return false;
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            setEditMode(false);
+            return false;
+        }
+    };
+
     if (!userStore.user) return null;
     return (
         <div className="UserProfile container-fluid my-3 px-0 mx-0">
@@ -47,7 +65,24 @@ export const UserProfile = observer(props => {
                         </Avatar>
                     </label>
                 </div>
-                <div className="col-8 h5 mb-0 d-flex align-items-center">{userStore.user.name}</div>
+                {editMode ? (
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="User name"
+                        type="text"
+                        defaultValue={userStore.user.name}
+                        // fullWidth
+                        // onChange={textChangeHandler}
+                        onKeyUp={keyUpHandler}
+                        style={{flexGrow: 1}}
+                    />
+                ) : (
+                    <div onDoubleClick={() => setEditMode(true)} className="col-8 h5 mb-0 d-flex align-items-center">
+                        {userStore.user.name}
+                    </div>
+                )}
                 <div className="col-2 d-flex align-items-center justify-content-end" onClick={logoutHandler}>
                     <Tooltip title="Logout" placement="top">
                         <FaSignOutAlt className="d-block custom__cursor_pointer" />

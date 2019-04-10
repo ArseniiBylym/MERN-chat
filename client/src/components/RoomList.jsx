@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import {ChatStore} from '../store';
 
 export const RoomList = observer(props => {
@@ -47,6 +48,9 @@ export const RoomList = observer(props => {
     return (
         <div className="RoomList">
             <Paper className="w-100 d-flex nowrap flex-column">
+                <Typography align="center" color="primary" variant="h6">
+                    Chat list
+                </Typography>
                 <List component="nav">
                     {chatStore.rooms.map(room => {
                         return (
@@ -63,7 +67,7 @@ export const RoomList = observer(props => {
             <Dialog open={modal} onClose={modalHandler}>
                 <DialogTitle style={{padding: 30, minWidth: 500}}>Add new chat room</DialogTitle>
                 <DialogContent style={{padding: 30}}>
-                    <TextField autoFocus margin="dense" id="name" label="New room name" type="text" fullWidth onChange={textChangeHandler} onKeyUp={keyUpHandler} />
+                    <TextField autoFocus margin="dense" label="New room name" type="text" fullWidth onChange={textChangeHandler} onKeyUp={keyUpHandler} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={modalHandler} color="primary">

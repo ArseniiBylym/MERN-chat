@@ -75,7 +75,8 @@ module.exports = clientManager = () => {
         try {
             let user = await User.findById(userId).exec();
             user.name = name;
-            user.save()
+            await user.save()
+            users[userId].name = name;
         } catch (error) {
             console.log(error);
         }
@@ -86,7 +87,7 @@ module.exports = clientManager = () => {
             let user = await User.findById(userId).exec();
             user.avatar = avatar;
             await user.save()
-            return;
+            users[userId].avatar = avatar;
         } catch (error) {
             console.log(error);
         }

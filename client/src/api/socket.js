@@ -24,8 +24,8 @@ class Socket {
         this.client.emit('getUsers', null, cb);
     };
 
-    updataUserName = (userId, name) => {
-        this.client.emit('updataUserName', userId, name);
+    updateUserName = (userId, name) => {
+        this.client.emit('updateUserName', userId, name);
     };
 
     updateUserAvatar = (userId, avatar) => {
