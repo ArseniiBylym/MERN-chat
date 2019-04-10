@@ -6,6 +6,7 @@ module.exports = clientManager = () => {
     const messages = {
         general: []
     };
+    const privateMessages = {};
 
     const initUsersFromDB = async () => {
         try {
@@ -17,6 +18,7 @@ module.exports = clientManager = () => {
                         location: null, 
                         clientId: null,
                     }
+                    privateMessages[item._id.toString()] = {}
     
                 })
             }
@@ -32,8 +34,27 @@ module.exports = clientManager = () => {
         params.forEach(item => data[item] = users[_id][item]) 
         return data;
     }
-    const getMessages = (room = 'general') => messages[room];
+
     const getAllMessages = () => messages;
+    const getMessages = (room = 'general') => messages[room];
+    const addMessage = (room = 'general', message) => {
+        messages[room].push(message);
+    }
+    const getPrivateMessages = (userId, conectedUserId) => {
+        if (!privateMessages[userId] || !privateMessages[userId][conectedUserId]) return [];
+        return privateMessages[userId][conectedUserId];
+    }
+    const addPrivateMessage = (message, conectedUserId) => {
+        if (!privateMessages[message.userId] || !privateMessages[message.userId][conectedUserId]) {
+            privateMessages[message.userId][conectedUserId] = [];
+        }
+        privateMessages[message.userId][conectedUserId].push(message);
+
+        if (!privateMessages[conectedUserId] || !privateMessages[conectedUserId][message.userId]) {
+            privateMessages[conectedUserId][message.userId] = [];
+        }
+        privateMessages[conectedUserId][message.userId].push(message);
+    }
 
     const registerUser = (user, clientId) => {
         users[user._id] = {
@@ -52,16 +73,13 @@ module.exports = clientManager = () => {
         users[userId].location = null;
     }
 
+    const getRooms = () => rooms;
+
     const createRoom = roomName => {
         rooms.push(roomName);
         messages[roomName] = [];
     }
 
-    const getRooms = () => rooms;
-
-    const addMessage = (room = 'general', message) => {
-        messages[room].push(message);
-    }
 
     const showLocation = (userId, location) => {
         users[userId].location = location;
@@ -109,6 +127,8 @@ module.exports = clientManager = () => {
         updateUserName,
         updateUserAvatar,
         registerUser,
-        getAllMessages
+        getAllMessages,
+        getPrivateMessages,
+        addPrivateMessage
     }
 }

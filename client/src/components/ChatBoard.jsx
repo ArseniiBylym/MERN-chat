@@ -15,8 +15,12 @@ export const ChatBoard = observer(props => {
             container.current.scrollTop = container.current.scrollHeight;
         }
     });
+    useEffect(() => {
+        chatStore.fetchPrivateMessages();
+    }, [chatStore.respondent]);
 
-    const messages = chatStore.roomMessages;
+    const messages = chatStore.respondent ? chatStore.respondentMessages : chatStore.roomMessages;
+    // const messages = chatStore.roomMessages;
 
     return (
         <div ref={container} className="ChatBoard bg-cream p-2">

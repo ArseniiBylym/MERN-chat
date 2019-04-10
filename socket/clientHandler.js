@@ -121,4 +121,13 @@ module.exports = clientHandler = (socket, manager) => {
         manager.createRoom(name);
         socket.broadcast.emit('createRoom', name);
     })
+
+    socket.on('getPrivateMessages', (userId, conectedUserId, cb) => {
+        cb(manager.getPrivateMessages(userId, conectedUserId))
+    })
+
+    socket.on('privateMessage', (message, conectedUserId, clientId) => {
+        manager.addPrivateMessage(message, conectedUserId);
+        io.getIO().to(`${clientId}`).emit('privateMessage', message);
+    })
 };

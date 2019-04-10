@@ -10,6 +10,8 @@ export class Chat {
     rooms = ['general'];
     activeRoom = 'general';
     focusedCoords = [];
+    privateMessages = {};
+    respondent = null;
 
     // Users section
     get usersArray() {
@@ -67,6 +69,7 @@ export class Chat {
     };
 
     focusOnUser = userId => {
+        this.respondent = {_id: this.users[userId]._id, clientId: this.users[userId].clientId};
         if (!this.users[userId].clientId || !this.users[userId].location) return false;
         this.focusedCoords = [this.users[userId].location.lat, this.users[userId].location.long];
     };
@@ -104,15 +107,25 @@ export class Chat {
     recieveMessage = (room = 'general', message) => {
         this.messages[room].push(message);
     };
+    recievePrivateMessage = message => {
+        if (!this.privateMessages[message.userId]) {
+            this.privateMessages[message.userId] = [];
+        }
+        this.privateMessages[message.userId].push(message);
+    };
     sendMessage = text => {
         const message = {
             text,
             userId: globalStore.userStore.user._id,
             date: new Date(),
         };
-
-        socket.sendMessage(this.activeRoom, message);
-        this.messages[this.activeRoom].push(message);
+        if (this.respondent) {
+            socket.sendPrivateMessage(message, this.respondent._id, this.respondent.clientId);
+            this.privateMessages[this.respondent._id].push(message);
+        } else {
+            socket.sendMessage(this.activeRoom, message);
+            this.messages[this.activeRoom].push(message);
+        }
     };
 
     get roomMessages() {
@@ -126,6 +139,27 @@ export class Chat {
             };
         });
     }
+
+    get respondentMessages() {
+        if (!this.privateMessages[this.respondent._id]) return [];
+        return this.privateMessages[this.respondent._id].map(message => {
+            return {
+                ...message,
+                user: this.users[message.userId],
+                owner: message.userId === globalStore.userStore.user._id,
+            };
+        });
+    }
+
+    fetchPrivateMessages = () => {
+        if (!this.respondent || !this.respondent.clientId) return false;
+        socket.fetchPrivateMessages(globalStore.userStore.user._id, this.respondent._id, result => {
+            if (result) {
+                this.privateMessages[this.respondent._id] = result;
+            }
+        });
+    };
+
     // Messages section
 
     // Room section
@@ -149,6 +183,7 @@ export class Chat {
     };
 
     selectRoom = name => {
+        this.respondent = null;
         this.activeRoom = name;
     };
 
@@ -164,6 +199,13 @@ decorate(Chat, {
     rooms: observable,
     activeRoom: observable,
     focusedCoords: observable,
+
+    respondent: observable,
+
+    privateMessages: observable,
+    fetchPrivateMessages: action,
+    sendPrivateMessage: action,
+    recievePrivateMessage: action,
 
     usersArray: computed,
     visibleUsers: computed,

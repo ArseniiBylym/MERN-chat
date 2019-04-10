@@ -48,6 +48,10 @@ class Socket {
         this.client.emit('message', room, message);
     };
 
+    sendPrivateMessage = (message, conectedUserId, clientId) => {
+        this.client.emit('privateMessage', message, conectedUserId, clientId);
+    };
+
     getMessages = (room, cb) => {
         this.client.emit('getMessages', room, cb);
     };
@@ -60,11 +64,16 @@ class Socket {
         this.client.emit('createRoom', name);
     };
 
+    fetchPrivateMessages = (userId, clientId, cb) => {
+        this.client.emit('getPrivateMessages', userId, clientId, cb);
+    };
+
     initHandlers = () => {
         this.client.on('register', globalStore.chatStore.registerUser);
         this.client.on('join', globalStore.chatStore.joinUser);
         this.client.on('leave', globalStore.chatStore.leaveUser);
         this.client.on('message', globalStore.chatStore.recieveMessage);
+        this.client.on('privateMessage', globalStore.chatStore.recievePrivateMessage);
         this.client.on('updateUserName', globalStore.chatStore.updateUserName);
         this.client.on('updateUserAvatar', globalStore.chatStore.updateUserAvatar);
         this.client.on('showLocation', globalStore.chatStore.showLocation);
