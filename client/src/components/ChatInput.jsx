@@ -26,13 +26,13 @@ export const ChatInput = observer(props => {
     };
 
     return (
-        <div className="ChatInput p-3 d-flex">
+        <div className="ChatInput p-3 d-flex bg-white align-items-center">
             <TextField
                 id="filled-multiline-flexible"
                 label="Message"
                 multiline
                 style={{margin: 0, flexGrow: 1, marginRight: '16px'}}
-                rowsMax="4"
+                rowsMax="1"
                 value={message}
                 onKeyUp={onKeyUpHandler}
                 onChange={messageHandler}
@@ -42,7 +42,7 @@ export const ChatInput = observer(props => {
                     shrink: true,
                 }}
             />
-            <Button onClick={sendMessageHandler} variant="contained" color="primary" className="align-self-end">
+            <Button onClick={sendMessageHandler} variant="contained" color="primary" className="align-self-center px-3">
                 Send
             </Button>
         </div>

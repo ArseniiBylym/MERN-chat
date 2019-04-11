@@ -27,7 +27,7 @@ module.exports = clientHandler = (socket, manager) => {
                 process.env.JWT_SECRET_KEY,
                 {expiresIn: '1d'},
             );
-            manager.registerUser(user.toJSON, socket.id)
+            manager.registerUser(user.toJSON(), socket.id)
             socket.broadcast.emit('register', manager.getUserById(user.id));
             return cb({user: manager.getUserById(user.id), token});
         } catch (error) {
@@ -128,6 +128,8 @@ module.exports = clientHandler = (socket, manager) => {
 
     socket.on('privateMessage', (message, conectedUserId, clientId) => {
         manager.addPrivateMessage(message, conectedUserId);
-        io.getIO().to(`${clientId}`).emit('privateMessage', message);
+        if (clientId) {
+            io.getIO().to(`${clientId}`).emit('privateMessage', message);
+        }
     })
 };

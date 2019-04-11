@@ -49,7 +49,7 @@ export const RoomList = observer(props => {
         <div className="RoomList">
             <Paper className="w-100 d-flex nowrap flex-column">
                 <Typography align="center" color="primary" variant="h6">
-                    Chat list
+                    Chats
                 </Typography>
                 <List component="nav">
                     {chatStore.rooms.map(room => {

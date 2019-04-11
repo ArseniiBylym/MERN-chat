@@ -104,6 +104,14 @@ export class Chat {
             this.messages[this.activeRoom] = result;
         });
     };
+    fetchPrivateMessages = () => {
+        if (!this.respondent) return false;
+        socket.fetchPrivateMessages(globalStore.userStore.user._id, this.respondent._id, result => {
+            if (result) {
+                this.privateMessages[this.respondent._id] = result;
+            }
+        });
+    };
     recieveMessage = (room = 'general', message) => {
         this.messages[room].push(message);
     };
@@ -121,6 +129,9 @@ export class Chat {
         };
         if (this.respondent) {
             socket.sendPrivateMessage(message, this.respondent._id, this.respondent.clientId);
+            if (!this.privateMessages[this.respondent._id]) {
+                this.privateMessages[this.respondent._id] = [];
+            }
             this.privateMessages[this.respondent._id].push(message);
         } else {
             socket.sendMessage(this.activeRoom, message);
@@ -150,16 +161,6 @@ export class Chat {
             };
         });
     }
-
-    fetchPrivateMessages = () => {
-        if (!this.respondent || !this.respondent.clientId) return false;
-        socket.fetchPrivateMessages(globalStore.userStore.user._id, this.respondent._id, result => {
-            if (result) {
-                this.privateMessages[this.respondent._id] = result;
-            }
-        });
-    };
-
     // Messages section
 
     // Room section

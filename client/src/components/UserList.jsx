@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
+import Typography from '@material-ui/core/Typography';
 import {observer} from 'mobx-react-lite';
 import {IoIosRadioButtonOff, IoIosRadioButtonOn} from 'react-icons/io';
 import {ChatStore} from '../store';
@@ -16,6 +17,9 @@ export const UserList = observer(props => {
     return (
         <div className="UserList">
             <Paper className="w-100 p-2 d-flex nowrap flex-column">
+                <Typography align="center" color="primary" variant="h6">
+                    Users
+                </Typography>
                 {chatStore.usersArray.map(item => {
                     return (
                         <div key={item._id} className="my-1" onClick={userClickHandler(item._id)}>
