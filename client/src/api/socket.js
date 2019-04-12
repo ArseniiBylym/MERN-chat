@@ -1,8 +1,9 @@
 import io from 'socket.io-client';
 import {globalStore} from '../store';
+import {BASE_URI} from './config';
 
 class Socket {
-    client = io.connect('http://localhost:5000');
+    client = io.connect(BASE_URI);
 
     getUser = (token, cb) => {
         this.client.emit('user', token, cb);

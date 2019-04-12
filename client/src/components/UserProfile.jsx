@@ -1,4 +1,4 @@
-import React, {useState, useContext,} from 'react';
+import React, {useState, useContext} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -8,7 +8,6 @@ import TextField from '@material-ui/core/TextField';
 import {observer} from 'mobx-react-lite';
 import {FaSignOutAlt} from 'react-icons/fa';
 import {UserStore, ChatStore} from '../store';
-import {toBase64} from '../resources/helpers/file';
 
 export const UserProfile = observer(props => {
     const [switcher, setSwitcher] = useState(false);
@@ -32,9 +31,7 @@ export const UserProfile = observer(props => {
     };
 
     const changeAvatarHandler = e => {
-        toBase64(e.target.files[0]).then(file => {
-            userStore.updateUserAvatar(file);
-        });
+        userStore.updateUserAvatar(e.target.files[0]);
     };
 
     const keyUpHandler = e => {
