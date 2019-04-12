@@ -1,5 +1,7 @@
 import {observable, action, decorate, computed} from 'mobx';
 import {socket} from '../api/socket';
+import {sendFile} from '../api/fetch';
+import {BASE_URI} from '../api/config';
 
 export class User {
     user = null;
@@ -92,9 +94,10 @@ export class User {
         this.user.name = name;
     };
 
-    updateUserAvatar = avatar => {
-        socket.updateUserAvatar(this.user._id, avatar);
-        this.user.avatar = avatar;
+    updateUserAvatar = async avatar => {
+        const result = await sendFile(avatar);
+        this.user.avatar = `${BASE_URI}/images/${result}`;
+        socket.updateUserAvatar(this.user._id, `${BASE_URI}/images/${result}`);
     };
 }
 
