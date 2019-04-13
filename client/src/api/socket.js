@@ -9,12 +9,12 @@ class Socket {
         this.client.emit('user', token, cb);
     };
 
-    register = (userData, cb) => {
-        this.client.emit('register', userData, cb);
+    register = (registerData, cb) => {
+        this.client.emit('register', registerData, cb);
     };
 
-    login = ({email, password}, cb) => {
-        this.client.emit('login', {email, password}, cb);
+    login = (loginData, cb) => {
+        this.client.emit('login', loginData, cb);
     };
 
     logout = userId => {

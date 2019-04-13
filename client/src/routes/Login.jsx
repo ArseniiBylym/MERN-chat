@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
+import GoogleLogin from 'react-google-login';
 import {Redirect, Link} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -39,6 +40,15 @@ export const Login = observer(props => {
         return userStore.loginError && userStore.loginError[name];
     };
 
+    const googleLoginHandler = response => {
+        const {email, googleId} = response.profileObj;
+        const loginData = {
+            email,
+            googleId,
+        };
+        userStore.loginUser(loginData);
+    };
+
     if (!userStore.fetchedSuccess && !userStore.fetchedFailed) return null;
     if (userStore.user) {
         return <Redirect to="/home" />;
@@ -48,6 +58,14 @@ export const Login = observer(props => {
             <div className="row w-100">
                 <div className="Register__form col-6 mx-auto d-flex flex-column  ">
                     <h4 className="text-center text-primary">Login form</h4>
+                    <div className="my-4 align-self-center">
+                        <GoogleLogin
+                            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                            onSuccess={googleLoginHandler}
+                            onFailure={googleLoginHandler}
+                            buttonText="Login with Google"
+                        />
+                    </div>
                     <TextField
                         error={getError('email')}
                         name="email"

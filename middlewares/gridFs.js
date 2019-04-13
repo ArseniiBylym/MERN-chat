@@ -5,6 +5,7 @@ const GridFsStorage = require('multer-gridfs-storage');
 
 const storage = new GridFsStorage({
     url: process.env.MONGO_DB_URI,
+    // url: 'mongodb://localhost:27017/mern-chat',
     file: (req, file) => {
         return new Promise((resolve, reject) => {
           crypto.randomBytes(16, (err, buf) => {

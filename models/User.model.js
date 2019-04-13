@@ -15,7 +15,8 @@ const userSchema = new Schema({
         index: true,
     },
     avatar: {type: String, default: ''},
-    password: {type: String, required: [true, 'Password is required']},
+    googleId: {type: String, unique: [true, 'User already exists']},
+    password: {type: String},
 });
 
 userSchema.methods.toJSON = function() {

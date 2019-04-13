@@ -56,9 +56,9 @@ export class User {
         });
     };
 
-    loginUser = ({email, password}) => {
+    loginUser = data => {
         this.fetching = true;
-        return socket.login({email, password}, result => {
+        return socket.login(data, result => {
             if (result.error) {
                 this.fetching = false;
                 this.fetchedFailed = true;

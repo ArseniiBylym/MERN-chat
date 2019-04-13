@@ -7,18 +7,29 @@ module.exports = clientHandler = (socket, manager) => {
     console.log('Client contected', socket.id);
 
     socket.on('register', async (data, cb) => {
-        const {name, email, password, password_confirm} = data;
+        const {name, email, avatar, googleId, password, password_confirm} = data;
         const errorList = [];
-        if (!password.trim().length) {
-            errorList.push({password: 'Password is required'});
-        }
-        if (password.trim() !== password_confirm.trim()) {
-            errorList.push({password_confirm: 'Password not matches'});
+        if (!googleId) {
+            if (!password.trim().length) {
+                errorList.push({password: 'Password is required'});
+            }
+            if (password.trim() !== password_confirm.trim()) {
+                errorList.push({password_confirm: 'Password not matches'});
+            }
         }
 
         try {
-            const hashPassword = await bcrypt.hash(password, 10);
-            const user = await new User({name, email, password: hashPassword}).save();
+            const user = await new User({name, email})
+            if (password) {
+                user.password = await bcrypt.hash(password, 10);
+            }
+            if (googleId) {
+                user.googleId = googleId;
+            }
+            if (avatar) {
+                user.avatar = avatar;
+            }
+            user.save();
             const token = jwt.sign(
                 {
                     email,
@@ -42,14 +53,19 @@ module.exports = clientHandler = (socket, manager) => {
         }
     });
 
-    socket.on('login', async ({email, password}, cb) => {
+    socket.on('login', async ({email, password, googleId}, cb) => {
         try {
             const user = await User.findOne({email}).exec();
             if (!user) {
                 return cb({error: 'Wrong email', errorType: 'form', errorList: {email: 'Wrong email'}});
             }
-            if (!bcrypt.compareSync(password, user.password)) {
-                return cb({error: 'Wrong password', errorType: 'form', errorList: {password: 'Wrong password'}});
+            if (!googleId) {
+                if (!bcrypt.compareSync(password, user.password)) {
+                    return cb({error: 'Wrong password', errorType: 'form', errorList: {password: 'Wrong password'}});
+                }
+            }
+            if (googleId && googleId !== user.googleId) {
+                return cb({error: 'Wrong googleId', errorType: 'form', errorList: {googleid: 'Wrong Google account'}})
             }
             const token = jwt.sign({email, id: user.id.toString()}, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
             manager.addClient(socket.id, user.id);
