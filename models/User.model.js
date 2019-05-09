@@ -15,7 +15,7 @@ const userSchema = new Schema({
         index: true,
     },
     avatar: {type: String, default: ''},
-    googleId: {type: String, unique: [true, 'User already exists']},
+    googleId: {type: String},
     password: {type: String},
 });
 
