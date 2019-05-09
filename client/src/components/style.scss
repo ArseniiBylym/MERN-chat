@@ -1,0 +1,24 @@
+.leaflet-container{
+    height: 100vh;
+    width: 100%;
+}
+
+.Chat{
+    height: 100vh;
+    display: flex;
+    flex-flow: column nowrap;
+
+    &__board{
+        flex-grow: 1;
+    }
+}
+
+.ChatBoard{
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    &__content{
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+}
